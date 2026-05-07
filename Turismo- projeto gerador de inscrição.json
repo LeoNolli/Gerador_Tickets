@@ -1,0 +1,245 @@
+{
+  "name": "Turismo- projeto gerador de inscrição",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "[nome_cliente]",
+              "replaceText": "={{ $json.name }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[data_atual]",
+              "replaceText": "={{ $('Filtragem de Dados').item.json['Data atual'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[email_cliente]",
+              "replaceText": "={{ $('Filtragem de Dados').item.json.Email }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[telefone_cliente]",
+              "replaceText": "={{ $('Filtragem de Dados').item.json.Telefone.toString() }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "[data_validade]",
+              "replaceText": "={{ $('Data_atual').item.json.data_valida }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        512,
+        -96
+      ],
+      "id": "fccc1017-d181-49e4-86b3-3a60d896dd1a",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "nn4gQgNOqmAtN27t",
+          "name": "Google Docs account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Gerador de Inscrição",
+        "formDescription": "Inscrição para o city tour Floripa.\n",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nome"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Telefone",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "Data atual",
+              "fieldType": "date"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        16,
+        -96
+      ],
+      "id": "9820483e-c65b-477c-afb7-2ada863ad572",
+      "name": "Inscrição",
+      "webhookId": "39c5b02d-b3bd-48ef-a5ca-3a35e8b56493"
+    },
+    {
+      "parameters": {
+        "operation": "addToDate",
+        "magnitude": "={{ $now }}",
+        "duration": 7,
+        "outputFieldName": "data_valida",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        144,
+        32
+      ],
+      "id": "b1b68aaf-6910-4330-bf85-f2f1aab6f582",
+      "name": "Data_atual"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1eImd8fL2O9tcBYiuBnZGT1wDdv69W_INjUYS31WRVVs",
+          "mode": "list",
+          "cachedResultName": "Proposta_Turismo",
+          "cachedResultUrl": "https://docs.google.com/document/d/1eImd8fL2O9tcBYiuBnZGT1wDdv69W_INjUYS31WRVVs/edit?usp=drivesdk"
+        },
+        "name": "=Ingresso -  {{ $json.Nome }} -{{ $json.data_valida }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        400,
+        48
+      ],
+      "id": "5a2a5d72-b4d3-41a5-888d-4a3e8545356e",
+      "name": "Ingresso",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Vu1lH79xQBaMF2JM",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fffd0877-dfd7-447e-a3a1-3780b1bf66fb",
+              "name": "Nome",
+              "value": "={{ $('Inscrição').item.json.Nome }}",
+              "type": "string"
+            },
+            {
+              "id": "b6ebb950-849b-43bb-8af6-25da00027903",
+              "name": "Email",
+              "value": "={{ $('Inscrição').item.json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "fab2a8f0-ab26-40ce-b640-64b7bff7b5e8",
+              "name": "Telefone",
+              "value": "={{ $('Inscrição').item.json.Telefone }}",
+              "type": "number"
+            },
+            {
+              "id": "1fe08fe4-44eb-4bce-9f14-a2b54746fe08",
+              "name": "Data atual",
+              "value": "={{ $('Inscrição').item.json['Data atual'] }}",
+              "type": "string"
+            },
+            {
+              "id": "98eab9dc-ce61-4b6b-96b6-3ea97f1a7889",
+              "name": "data_valida",
+              "value": "={{ $json.data_valida }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        -112
+      ],
+      "id": "ae491856-4b0a-44bf-868f-40339ad962af",
+      "name": "Filtragem de Dados"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Inscrição": {
+      "main": [
+        [
+          {
+            "node": "Data_atual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data_atual": {
+      "main": [
+        [
+          {
+            "node": "Filtragem de Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ingresso": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtragem de Dados": {
+      "main": [
+        [
+          {
+            "node": "Ingresso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "70fa8ea5-4a30-41f2-bea1-b280fa3f1a54",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a444af6c0b61babb218eb73432595d660272da60719c6c89b8301118da59930a"
+  },
+  "id": "Rg3QG5V02qTVg3yl",
+  "tags": []
+}
